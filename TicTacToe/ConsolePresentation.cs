@@ -15,7 +15,7 @@ namespace TicTacToe
             {
                 Console.Out.WriteLine("");
                 Console.Out.WriteLine("");
-                Console.Out.WriteLine(controller.Board.ToString());
+                Console.Out.WriteLine(controller.Board);
                 Console.Out.WriteLine("");
                 Console.Out.WriteLine(controller.Status);
 

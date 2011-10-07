@@ -14,7 +14,7 @@ namespace TicTacToe.Tests
         }
 
         [Test]
-        public void when_gameNotStarted_then_theBoardIsEmpty()
+        public void When_GameNotStarted_Then_TheBoardIsEmpty()
         {
             var board = new Board();
             AssertBoardPositions(board.FreePositions, 0, 1, 2, 3, 4, 5, 6, 7, 8);
@@ -23,7 +23,7 @@ namespace TicTacToe.Tests
         }
 
         [Test]
-        public void when_XGoesCorner_then_theBoardIsX00000000()
+        public void When_XGoesCorner_Then_TheBoardIsX00000000()
         {
             var board = new Board();
             board.SetX(0);
@@ -33,7 +33,7 @@ namespace TicTacToe.Tests
         }
 
         [Test]
-        public void when_XGoesCorner_and_OGoesSide_then_theBoardIsXO0000000()
+        public void When_XGoesCorner_and_OGoesSide_Then_TheBoardIsXO0000000()
         {
             var board = new Board();
             board.SetX(0);
@@ -44,7 +44,7 @@ namespace TicTacToe.Tests
         }
 
         [Test, ExpectedException(typeof(InvalidOperationException))]
-        public void when_XGoesCenter_then_OCannotGoCenter()
+        public void When_XGoesCenter_Then_OCannotGoCenter()
         {
             var board = new Board();
             board.SetX(4);
@@ -52,7 +52,7 @@ namespace TicTacToe.Tests
         }
 
         [Test, ExpectedException(typeof(InvalidOperationException))]
-        public void when_OGoesCenter_then_XCannotGoCenter()
+        public void When_OGoesCenter_Then_XCannotGoCenter()
         {
             var board = new Board();
             board.SetO(4);

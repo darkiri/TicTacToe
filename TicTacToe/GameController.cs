@@ -1,3 +1,5 @@
+using System;
+
 namespace TicTacToe
 {
     public class GameController
@@ -23,9 +25,9 @@ namespace TicTacToe
             }
         }
 
-        public IBoard Board
+        public String Board
         {
-            get { return _game.Board; }
+            get { return _game.Board.ToString(); }
         }
 
         public void GoTo(int position)

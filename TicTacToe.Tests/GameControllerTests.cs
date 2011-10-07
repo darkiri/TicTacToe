@@ -34,6 +34,7 @@ namespace TicTacToe.Tests
             Assert.That(_controller.Status, Is.EqualTo("O goes:"));
         }
 
+        [Test]
         public void When_XWins_Then_StatusIsXWins()
         {
             _gameMock.Setup(g => g.XWins()).Returns(true);
@@ -66,7 +67,7 @@ namespace TicTacToe.Tests
         [Test]
         public void When_BoardIsRendered_BoardShouldBeRequestedFromGame()
         {
-            Console.Out.WriteLine(_controller.Board.ToString());
+            Console.Out.WriteLine(_controller.Board);
             _gameMock.Verify(g => g.Board);
         }
 

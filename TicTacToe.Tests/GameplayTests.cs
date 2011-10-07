@@ -19,14 +19,14 @@ namespace TicTacToe.Tests
         }
 
         [Test]
-        public void WhenXGoesCorner_ThenXIsSetOnTheBoard()
+        public void When_XGoesCorner_Then_XIsSetOnTheBoard()
         {
             _game.XGoesTo(0);
             _boardMock.Verify(b => b.SetX(0));
         }
 
         [Test]
-        public void WhenOGoesCenter_ThenOIsSetOnTheBoard()
+        public void When_OGoesCenter_Then_OIsSetOnTheBoard()
         {
             _game.Setup(false);
             _game.OGoesTo(4);
@@ -34,14 +34,14 @@ namespace TicTacToe.Tests
         }
 
         [Test, ExpectedException(typeof(InvalidOperationException))]
-        public void WhenXGoes_ThenXCannotGoAgain()
+        public void When_XGoes_Then_XCannotGoAgain()
         {
             _game.XGoesTo(0);
             _game.XGoesTo(1);
         }
 
         [Test, ExpectedException(typeof(InvalidOperationException))]
-        public void WhenOGoes_ThenOCannotGoAgain()
+        public void When_OGoes_Then_OCannotGoAgain()
         {
             _game.Setup(false);
             _game.OGoesTo(0);
@@ -49,7 +49,7 @@ namespace TicTacToe.Tests
         }
 
         [Test]
-        public void WhenOGoes_and_XGoes_ThenOCanGoAgain()
+        public void When_OGoes_and_XGoes_Then_OCanGoAgain()
         {
             _game.Setup(false);
             _game.OGoesTo(0);
@@ -62,7 +62,7 @@ namespace TicTacToe.Tests
         }
 
         [Test, ExpectedException(typeof(InvalidOperationException))]
-        public void WhenXGoesCorner_ThenOCannotGoCorner()
+        public void When_XGoesCorner_Then_OCannotGoCorner()
         {
             _game.XGoesTo(0);
             _boardMock.Setup(b => b.FreePositions).Returns(new[] { 1, 2, 3, 4, 5, 6, 7, 8 });
@@ -70,7 +70,7 @@ namespace TicTacToe.Tests
         }
 
         [Test, ExpectedException(typeof(InvalidOperationException))]
-        public void WhenOGoesCorner_ThenXCannotGoCorner()
+        public void When_OGoesCorner_Then_XCannotGoCorner()
         {
             _game.Setup(false);
             _game.OGoesTo(0);
@@ -79,7 +79,7 @@ namespace TicTacToe.Tests
         }
 
         [Test]
-        public void WhenBoardHasXInCorner_and_OInCenter_ThenNobodyWins()
+        public void When_BoardHasXInCorner_and_OInCenter_Then_NobodyWins()
         {
             _boardMock.Setup(b => b.XPositions).Returns(new[] { 0 });
             _boardMock.Setup(b => b.OPositions).Returns(new[] { 4 });
@@ -95,7 +95,7 @@ namespace TicTacToe.Tests
         [TestCase(new[] { 2, 5, 8 }, TestName = "X Third Column")]
         [TestCase(new[] { 0, 4, 8 }, TestName = "X First Diagonal")]
         [TestCase(new[] { 2, 4, 6 }, TestName = "X Second Diagonal")]
-        public void WhenBoardHasFullLineX_ThenXWins(int[] line)
+        public void When_BoardHasFullLineX_Then_XWins(int[] line)
         {
             _boardMock.Setup(b => b.XPositions).Returns(line);
             Assert.That(_game.XWins(), Is.True);
@@ -110,7 +110,7 @@ namespace TicTacToe.Tests
         [TestCase(new[] { 2, 5, 8 }, TestName = "O Third Column")]
         [TestCase(new[] { 0, 4, 8 }, TestName = "O First Diagonal")]
         [TestCase(new[] { 2, 4, 6 }, TestName = "O Second Diagonal")]
-        public void WhenBoardHasFullLineO_ThenOWins(int[] line)
+        public void When_BoardHasFullLineO_Then_OWins(int[] line)
         {
             _boardMock.Setup(b => b.OPositions).Returns(line);
             Assert.That(_game.XWins(), Is.False);
@@ -118,7 +118,7 @@ namespace TicTacToe.Tests
         }
 
         [Test]
-        public void WhenGameResetted_ThenXGoesNowAndBoardResetted()
+        public void When_GameResetted_Then_XGoesNowAndBoardResetted()
         {
             _game.XGoesTo(0);
             _game.Reset();
