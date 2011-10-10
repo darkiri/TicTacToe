@@ -47,10 +47,10 @@
     <Compile Include="ConsoleView.cs" />
     <Compile Include="IView.cs" />
     <Compile Include="TheDriver.cs" />
-    <Compile Include="Game.cs" />
+    <Compile Include="Gameplay.cs" />
     <Compile Include="GameController.cs" />
     <Compile Include="IBoard.cs" />
-    <Compile Include="IGame.cs" />
+    <Compile Include="IGameplay.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

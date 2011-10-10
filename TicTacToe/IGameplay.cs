@@ -1,13 +1,15 @@
+using System;
+
 namespace TicTacToe
 {
-    public interface IGame
+    public interface IGameplay
     {
         bool XGoesNow { get; }
         IBoard Board { get; }
-        void XGoesTo(int position);
-        void OGoesTo(int position);
+        event EventHandler Changed;
         bool XWins();
         bool OWins();
         void Reset();
+        void GoTo(int position);
     }
 }

@@ -4,11 +4,10 @@ namespace TicTacToe
 {
     public interface IBoard
     {
-        void SetX(int position);
-        void SetO(int position);
+        void Set(int position, BoardMark mark);
         IEnumerable<int> FreePositions { get; }
-        IEnumerable<int> XPositions { get; }
-        IEnumerable<int> OPositions { get; }
         void Reset();
+        bool HasCompleteLine(BoardMark mark);
+        IEnumerable<int> Get(BoardMark mark);
     }
 }

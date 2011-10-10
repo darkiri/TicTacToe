@@ -5,21 +5,29 @@ namespace TicTacToe
     public class GameController 
     {
         private readonly IView _view;
-        private readonly IGame _game;
+        private readonly IGameplay _gameplay;
 
-        public GameController(IView view, IGame game) 
+        public GameController(IView view, IGameplay gameplay) 
         {
             _view = view;
-            _game = game;
+            _gameplay = gameplay;
+            _gameplay.Changed += (s, a) => UpdateView();
+            UpdateView();
         }
 
-        private string GetStatus() 
+        private void UpdateView()
         {
-            return _game.XWins()
+            _view.Render(_gameplay.Board);
+            _view.Render(GetStatus());
+        }
+
+        public string GetStatus() 
+        {
+            return _gameplay.XWins()
                        ? "X wins!"
-                       : _game.OWins()
+                       : _gameplay.OWins()
                              ? "O wins!"
-                             : _game.XGoesNow
+                             : _gameplay.XGoesNow
                                    ? "X goes:"
                                    : "O goes:";
         }
@@ -28,9 +36,6 @@ namespace TicTacToe
 
         public void DoUserInteraction() 
         {            
-            _view.Render(_game.Board);
-            _view.Render(GetStatus());
-
             try 
             {
                 HandleInput(_view.GetUserInput().ToUpper());
@@ -41,20 +46,20 @@ namespace TicTacToe
             }            
         }
 
-        private void HandleInput(string key) 
+        private void HandleInput(string key)
         {
-            if (key == "Q") 
+            switch (key)
             {
-                QuitGame = true;
-            } 
-            else if (key == "R") 
-            {
-                _game.Reset();
-            } 
-            else
-            {
-                GoTo(ParsePosition(key));               
-            }            
+                case "Q":
+                    QuitGame = true;
+                    break;
+                case "R":
+                    _gameplay.Reset();
+                    break;
+                default:
+                    _gameplay.GoTo(ParsePosition(key));
+                    break;
+            }
         }
 
         private static int ParsePosition(string key) 
@@ -66,18 +71,6 @@ namespace TicTacToe
             else 
             {
                 throw new FormatException("Enter position (0-8)");
-            }
-        }
-
-        private void GoTo(int position) 
-        {
-            if (_game.XGoesNow) 
-            {
-                _game.XGoesTo(position);
-            } 
-            else 
-            {
-                _game.OGoesTo(position);
             }
         }
     }

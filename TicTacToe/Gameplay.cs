@@ -4,25 +4,12 @@ using System.Linq;
 
 namespace TicTacToe
 {
-    public class Game : IGame
+    public class Gameplay : IGameplay
     {
         private readonly IBoard _board;
         private bool _xGoesNow;
 
-        private readonly int[][] _winPositions =
-            new[]
-                {
-                    new[] {0, 1, 2},
-                    new[] {3, 4, 5},
-                    new[] {6, 7, 8},
-                    new[] {0, 3, 6},
-                    new[] {1, 4, 7},
-                    new[] {2, 5, 8},
-                    new[] {0, 4, 8},
-                    new[] {2, 4, 6}
-                };
-
-        public Game(IBoard board)
+        public Gameplay(IBoard board)
         {
             _board = board;
             _xGoesNow = true;
@@ -38,17 +25,19 @@ namespace TicTacToe
             get { return _board; }
         }
 
+        public event EventHandler Changed;
+
         public void XGoesTo(int position)
         {
-            SetAMark(Board.SetX, position, true);
+            SetAMark(position, true);
         }
 
         public void OGoesTo(int position)
         {
-            SetAMark(Board.SetO, position, false);
+            SetAMark(position, false);
         }
 
-        private void SetAMark(Action<int> setPosition, int position, bool iAmX)
+        private void SetAMark(int position, bool iAmX)
         {
             if (!iAmX && XGoesNow || iAmX && !XGoesNow)
             {
@@ -62,7 +51,7 @@ namespace TicTacToe
                 }
                 else
                 {
-                    setPosition(position);
+                    _board.Set(position, iAmX ? BoardMark.X : BoardMark.O);
                     _xGoesNow = !iAmX;
                 }
             }
@@ -75,23 +64,39 @@ namespace TicTacToe
 
         public bool XWins()
         {
-            return _winPositions.Any(line => CompleteLine(line, Board.XPositions));
-        }
-
-        private bool CompleteLine(IEnumerable<int> winLine, IEnumerable<int> positions)
-        {
-            return winLine.All(positions.Contains);
+            return Board.HasCompleteLine(BoardMark.X);
         }
 
         public bool OWins()
         {
-            return _winPositions.Any(line => CompleteLine(line, Board.OPositions));
+            return Board.HasCompleteLine(BoardMark.O);
         }
 
         public void Reset()
         {
             _xGoesNow = true;
             _board.Reset();
+        }
+
+        public void GoTo(int position) 
+        {
+            if (XGoesNow) 
+            {
+                XGoesTo(position);
+            } 
+            else 
+            {
+                OGoesTo(position);
+            }
+            OnChanged();
+        }
+
+        private void OnChanged()
+        {
+            if (null != Changed)
+            {
+                Changed(this, new EventArgs());
+            }
         }
     }
 }

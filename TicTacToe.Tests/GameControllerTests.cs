@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using System;
+using Moq;
 using NUnit.Framework;
 
 namespace TicTacToe.Tests
@@ -7,13 +8,13 @@ namespace TicTacToe.Tests
     public class GameControllerTests
     {
         private GameController _controller;
-        private Mock<IGame> _gameMock;
+        private Mock<IGameplay> _gameMock;
         private Mock<IView> _viewMock;
 
         [SetUp]
         public void SetUp()
         {
-            _gameMock = new Mock<IGame>
+            _gameMock = new Mock<IGameplay>
                             {
                                 DefaultValue = DefaultValue.Mock
                             };
@@ -26,50 +27,37 @@ namespace TicTacToe.Tests
         {
             _gameMock.Setup(g => g.XGoesNow).Returns(true);
             _controller.DoUserInteraction();
-            _viewMock.Verify(v => v.Render("X goes:"));
+            Assert.That(_controller.GetStatus(), Is.EqualTo("X goes:"));
         }
 
         [Test]
         public void When_OHasItsTurn_Then_StatusIsOGoes()
         {
             _gameMock.Setup(g => g.XGoesNow).Returns(false);
-            _controller.DoUserInteraction();
-            _viewMock.Verify(v => v.Render("O goes:"));
+            Assert.That(_controller.GetStatus(), Is.EqualTo("O goes:"));
         }
 
         [Test]
         public void When_XWins_Then_StatusIsXWins()
         {
             _gameMock.Setup(g => g.XWins()).Returns(true);
-            _controller.DoUserInteraction();
-            _viewMock.Verify(v => v.Render("X wins!"));
+            Assert.That(_controller.GetStatus(), Is.EqualTo("X wins!"));
         }
 
         [Test]
         public void When_OWins_Then_StatusIsOWins()
         {
             _gameMock.Setup(g => g.OWins()).Returns(true);
-            _controller.DoUserInteraction();
-            _viewMock.Verify(v => v.Render("O wins!"));
+            Assert.That(_controller.GetStatus(), Is.EqualTo("O wins!"));
         }
 
         [Test]
-        public void When_XHasItsTurn_and_PositionIsSelected_Then_XMarkIsSetOnThePosition()
+        public void When_UserInputsNumber_Then_GameGoesToThePosition()
         {
-            _gameMock.Setup(g => g.XGoesNow).Returns(true);
-            _viewMock.Setup(v => v.GetUserInput()).Returns("0");
+            _viewMock.Setup(v => v.GetUserInput()).Returns("3");
             _controller.DoUserInteraction();
-            _gameMock.Verify(g => g.XGoesTo(0));
+            _gameMock.Verify(g => g.GoTo(3));
         }
-
-        [Test]
-        public void When_OHasItsTurn_and_PositionIsSelected_Then_OMarkIsSetOnThePosition()
-        {
-            _gameMock.Setup(g => g.XGoesNow).Returns(false);
-            _viewMock.Setup(v => v.GetUserInput()).Returns("1");
-            _controller.DoUserInteraction();
-            _gameMock.Verify(g => g.OGoesTo(1));
-        }       
 
         [Test]
         public void When_UserPresseR_Then_GameIsRestarted()
@@ -84,6 +72,15 @@ namespace TicTacToe.Tests
         {
             _viewMock.Setup(v => v.GetUserInput()).Returns("Q");
             _controller.DoUserInteraction();
+            Assert.That(_controller.QuitGame, Is.True);
+        }
+
+        [Test]
+        public void When_GameplayIsChanged_Then_CurrentStateIsRendered()
+        {
+            _gameMock.Raise(g => g.Changed += null, new EventArgs());
+            _viewMock.Verify(v => v.Render(_gameMock.Object.Board));
+            _viewMock.Verify(v => v.Render(_controller.GetStatus()));
         }
     }
 }

@@ -7,7 +7,7 @@ namespace TicTacToe.Tests
     [TestFixture]
     public class GameplayTests
     {
-        private Game _game;
+        private Gameplay _gameplay;
         private Mock<IBoard> _boardMock;
 
         [SetUp]
@@ -15,114 +15,67 @@ namespace TicTacToe.Tests
         {
             _boardMock = new Mock<IBoard>();
             _boardMock.Setup(b => b.FreePositions).Returns(new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8 });
-            _game = new Game(_boardMock.Object);
+            _gameplay = new Gameplay(_boardMock.Object);
         }
 
         [Test]
         public void When_XGoesCorner_Then_XIsSetOnTheBoard()
         {
-            _game.XGoesTo(0);
-            _boardMock.Verify(b => b.SetX(0));
+            _gameplay.Setup(true);
+            _gameplay.GoTo(0);
+            _boardMock.Verify(b => b.Set(0, BoardMark.X));
         }
 
         [Test]
         public void When_OGoesCenter_Then_OIsSetOnTheBoard()
         {
-            _game.Setup(false);
-            _game.OGoesTo(4);
-            _boardMock.Verify(b => b.SetO(4));
-        }
-
-        [Test, ExpectedException(typeof(InvalidOperationException))]
-        public void When_XGoes_Then_XCannotGoAgain()
-        {
-            _game.XGoesTo(0);
-            _game.XGoesTo(1);
-        }
-
-        [Test, ExpectedException(typeof(InvalidOperationException))]
-        public void When_OGoes_Then_OCannotGoAgain()
-        {
-            _game.Setup(false);
-            _game.OGoesTo(0);
-            _game.OGoesTo(1);
+            _gameplay.Setup(false);
+            _gameplay.GoTo(4);
+            _boardMock.Verify(b => b.Set(4, BoardMark.O));
         }
 
         [Test]
-        public void When_OGoes_and_XGoes_Then_OCanGoAgain()
+        public void When_XGoes_and_OGoes_Then_XandOareSetOnTheBoard()
         {
-            _game.Setup(false);
-            _game.OGoesTo(0);
-            _game.XGoesTo(1);
-            _game.OGoesTo(2);
+            _gameplay.Setup(true);
+            _gameplay.GoTo(2);
+            _gameplay.GoTo(5);
+            _boardMock.Verify(b => b.Set(2, BoardMark.X), Times.Once());
+            _boardMock.Verify(b => b.Set(5, BoardMark.O), Times.Once());
+        }
 
-            _boardMock.Verify(b => b.SetO(0), Times.Once());
-            _boardMock.Verify(b => b.SetX(1), Times.Once());
-            _boardMock.Verify(b => b.SetO(2), Times.Once());
+        [Test]
+        public void When_XGoes_Then_GameChangesIsTriggered()
+        {
+            var eventTriggered = false;
+            _gameplay.Changed += (_, __) => eventTriggered = true;
+            _gameplay.GoTo(0);
+            Assert.True(eventTriggered);
+            
         }
 
         [Test, ExpectedException(typeof(InvalidOperationException))]
-        public void When_XGoesCorner_Then_OCannotGoCorner()
+        public void When_CornerIsNotFree_Then_CannotGoCorner()
         {
-            _game.XGoesTo(0);
             _boardMock.Setup(b => b.FreePositions).Returns(new[] { 1, 2, 3, 4, 5, 6, 7, 8 });
-            _game.OGoesTo(0);
-        }
-
-        [Test, ExpectedException(typeof(InvalidOperationException))]
-        public void When_OGoesCorner_Then_XCannotGoCorner()
-        {
-            _game.Setup(false);
-            _game.OGoesTo(0);
-            _boardMock.Setup(b => b.FreePositions).Returns(new[] { 1, 2, 3, 4, 5, 6, 7, 8 });
-            _game.XGoesTo(0);
+            _gameplay.GoTo(0);
         }
 
         [Test]
         public void When_BoardHasXInCorner_and_OInCenter_Then_NobodyWins()
         {
-            _boardMock.Setup(b => b.XPositions).Returns(new[] { 0 });
-            _boardMock.Setup(b => b.OPositions).Returns(new[] { 4 });
-            Assert.That(_game.XWins(), Is.False);
-            Assert.That(_game.OWins(), Is.False);
-        }
-
-        [TestCase(new[]{0, 1, 2}, TestName = "X First Line")]
-        [TestCase(new[] { 3, 4, 5 }, TestName = "X Second Line")]
-        [TestCase(new[] { 6, 7, 8 }, TestName = "X Third Line")]
-        [TestCase(new[] { 0, 3, 6 }, TestName = "X First Column")]
-        [TestCase(new[] { 1, 4, 7 }, TestName = "X Second Column")]
-        [TestCase(new[] { 2, 5, 8 }, TestName = "X Third Column")]
-        [TestCase(new[] { 0, 4, 8 }, TestName = "X First Diagonal")]
-        [TestCase(new[] { 2, 4, 6 }, TestName = "X Second Diagonal")]
-        public void When_BoardHasFullLineX_Then_XWins(int[] line)
-        {
-            _boardMock.Setup(b => b.XPositions).Returns(line);
-            Assert.That(_game.XWins(), Is.True);
-            Assert.That(_game.OWins(), Is.False);
-        }
-
-        [TestCase(new[] { 0, 1, 2 }, TestName = "O First Line")]
-        [TestCase(new[] { 3, 4, 5 }, TestName = "O Second Line")]
-        [TestCase(new[] { 6, 7, 8 }, TestName = "O Third Line")]
-        [TestCase(new[] { 0, 3, 6 }, TestName = "O First Column")]
-        [TestCase(new[] { 1, 4, 7 }, TestName = "O Second Column")]
-        [TestCase(new[] { 2, 5, 8 }, TestName = "O Third Column")]
-        [TestCase(new[] { 0, 4, 8 }, TestName = "O First Diagonal")]
-        [TestCase(new[] { 2, 4, 6 }, TestName = "O Second Diagonal")]
-        public void When_BoardHasFullLineO_Then_OWins(int[] line)
-        {
-            _boardMock.Setup(b => b.OPositions).Returns(line);
-            Assert.That(_game.XWins(), Is.False);
-            Assert.That(_game.OWins(), Is.True);
+            _boardMock.Setup(b => b.Get(BoardMark.X)).Returns(new[] { 0 });
+            _boardMock.Setup(b => b.Get(BoardMark.O)).Returns(new[] { 4 });
+            Assert.That(_gameplay.XWins(), Is.False);
+            Assert.That(_gameplay.OWins(), Is.False);
         }
 
         [Test]
         public void When_GameResetted_Then_XGoesNowAndBoardResetted()
         {
-            _game.XGoesTo(0);
-            _game.Reset();
-            Assert.True(_game.XGoesNow);
+            _gameplay.GoTo(0);
+            _gameplay.Reset();
+            Assert.True(_gameplay.XGoesNow);
             _boardMock.Verify(b=>b.Reset());
         }
     }

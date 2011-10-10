@@ -9,7 +9,7 @@
 
         private static GameController InjectComponents() 
         {
-            return new GameController(new ConsoleView(), new Game(new Board()));
+            return new GameController(new ConsoleView(), new Gameplay(new Board()));
         }
 
         private static void StartPipe(GameController controller)
