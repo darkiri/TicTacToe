@@ -53,6 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BoardTests.cs" />
+    <Compile Include="BobTests.cs" />
     <Compile Include="GameControllerTests.cs" />
     <Compile Include="GameplayTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

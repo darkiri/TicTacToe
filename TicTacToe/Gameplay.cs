@@ -1,94 +1,73 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace TicTacToe
 {
     public class Gameplay : IGameplay
     {
-        private readonly IBoard _board;
-        private bool _xGoesNow;
+        private BoardState _board;
+        private readonly IPlayStrategy _ai;
+        private bool _playWithComputer;
 
-        public Gameplay(IBoard board)
+        public Gameplay(IPlayStrategy ai)
         {
-            _board = board;
-            _xGoesNow = true;
+            _ai = ai;
+            _ai.SetMark(BoardMark.O);
+            Reset();
         }
 
-        public bool XGoesNow
+        public void Setup(bool playWithComputer)
         {
-            get { return _xGoesNow; }
+            _playWithComputer = playWithComputer;
         }
 
-        public IBoard Board
+        public BoardMark WhoGoesNow { get; private set; }
+
+        public BoardState Board
         {
             get { return _board; }
         }
 
         public event EventHandler Changed;
 
-        public void XGoesTo(int position)
+        public BoardMark WhoWins()
         {
-            SetAMark(position, true);
-        }
-
-        public void OGoesTo(int position)
-        {
-            SetAMark(position, false);
-        }
-
-        private void SetAMark(int position, bool iAmX)
-        {
-            if (!iAmX && XGoesNow || iAmX && !XGoesNow)
-            {
-                throw new InvalidOperationException("Not your turn!");
-            }
-            else
-            {
-                if (!Board.FreePositions.Any(p => p == position))
-                {
-                    throw new InvalidOperationException(String.Format("Cannot go to position {0}!", position));
-                }
-                else
-                {
-                    _board.Set(position, iAmX ? BoardMark.X : BoardMark.O);
-                    _xGoesNow = !iAmX;
-                }
-            }
-        }
-
-        public void Setup(bool xGoesFirst)
-        {
-            _xGoesNow = xGoesFirst;
-        }
-
-        public bool XWins()
-        {
-            return Board.HasCompleteLine(BoardMark.X);
-        }
-
-        public bool OWins()
-        {
-            return Board.HasCompleteLine(BoardMark.O);
+            return Board.HasCompleteLine()
+                       ? Board.HasCompleteLine(BoardMark.X)
+                             ? BoardMark.X
+                             : BoardMark.O
+                       : BoardMark._;
         }
 
         public void Reset()
         {
-            _xGoesNow = true;
-            _board.Reset();
+            WhoGoesNow = BoardMark.X;
+            _board = new BoardState();
         }
 
-        public void GoTo(int position) 
+        public void GoTo(int position)
         {
-            if (XGoesNow) 
-            {
-                XGoesTo(position);
-            } 
-            else 
-            {
-                OGoesTo(position);
-            }
+            SetAMark(position);
             OnChanged();
+
+            if (_playWithComputer)
+            {
+                SetAMark(_ai.GetNextPosition(_board));
+                OnChanged();
+            }
+        }
+
+        private void SetAMark(int position)
+        {
+            if (!Board.FreePositions.Any(p => p == position))
+            {
+                throw new InvalidOperationException(String.Format("Cannot go to position {0}!", position));
+            } 
+            else
+            {
+                _board = _board.Set(position, WhoGoesNow);
+                WhoGoesNow = WhoGoesNow == BoardMark.X ? BoardMark.O : BoardMark.X;
+            }
         }
 
         private void OnChanged()

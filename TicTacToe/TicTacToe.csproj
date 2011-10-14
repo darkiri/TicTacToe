@@ -43,13 +43,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Board.cs" />
+    <Compile Include="BoardState.cs" />
+    <Compile Include="Bob.cs" />
+    <Compile Include="BobDecisionTree.cs" />
     <Compile Include="ConsoleView.cs" />
+    <Compile Include="IPlayStrategy.cs" />
     <Compile Include="IView.cs" />
     <Compile Include="TheDriver.cs" />
     <Compile Include="Gameplay.cs" />
     <Compile Include="GameController.cs" />
-    <Compile Include="IBoard.cs" />
     <Compile Include="IGameplay.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

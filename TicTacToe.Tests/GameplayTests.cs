@@ -8,66 +8,53 @@ namespace TicTacToe.Tests
     public class GameplayTests
     {
         private Gameplay _gameplay;
-        private Mock<IBoard> _boardMock;
+        private Mock<IPlayStrategy> _ai;
 
         [SetUp]
         public void SetUp()
         {
-            _boardMock = new Mock<IBoard>();
-            _boardMock.Setup(b => b.FreePositions).Returns(new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8 });
-            _gameplay = new Gameplay(_boardMock.Object);
+            _ai = new Mock<IPlayStrategy>();
+            _gameplay = new Gameplay(_ai.Object);
         }
 
         [Test]
         public void When_XGoesCorner_Then_XIsSetOnTheBoard()
         {
-            _gameplay.Setup(true);
             _gameplay.GoTo(0);
-            _boardMock.Verify(b => b.Set(0, BoardMark.X));
-        }
-
-        [Test]
-        public void When_OGoesCenter_Then_OIsSetOnTheBoard()
-        {
-            _gameplay.Setup(false);
-            _gameplay.GoTo(4);
-            _boardMock.Verify(b => b.Set(4, BoardMark.O));
+            Assert.That(_gameplay.Board.GetPositions(BoardMark.X), Is.EquivalentTo(new[] {0}));
         }
 
         [Test]
         public void When_XGoes_and_OGoes_Then_XandOareSetOnTheBoard()
         {
-            _gameplay.Setup(true);
             _gameplay.GoTo(2);
             _gameplay.GoTo(5);
-            _boardMock.Verify(b => b.Set(2, BoardMark.X), Times.Once());
-            _boardMock.Verify(b => b.Set(5, BoardMark.O), Times.Once());
+            Assert.That(_gameplay.Board.GetPositions(BoardMark.X), Is.EquivalentTo(new[] {2}));
+            Assert.That(_gameplay.Board.GetPositions(BoardMark.O), Is.EquivalentTo(new[] {5}));
         }
 
         [Test]
         public void When_XGoes_Then_GameChangesIsTriggered()
         {
-            var eventTriggered = false;
-            _gameplay.Changed += (_, __) => eventTriggered = true;
+            var numTriggered = 0;
+            _gameplay.Changed += (_, __) => numTriggered++;
             _gameplay.GoTo(0);
-            Assert.True(eventTriggered);
-            
+            Assert.That(numTriggered, Is.EqualTo(1));
         }
 
-        [Test, ExpectedException(typeof(InvalidOperationException))]
+        [Test, ExpectedException(typeof (InvalidOperationException))]
         public void When_CornerIsNotFree_Then_CannotGoCorner()
         {
-            _boardMock.Setup(b => b.FreePositions).Returns(new[] { 1, 2, 3, 4, 5, 6, 7, 8 });
+            _gameplay.GoTo(0);
             _gameplay.GoTo(0);
         }
 
         [Test]
         public void When_BoardHasXInCorner_and_OInCenter_Then_NobodyWins()
         {
-            _boardMock.Setup(b => b.Get(BoardMark.X)).Returns(new[] { 0 });
-            _boardMock.Setup(b => b.Get(BoardMark.O)).Returns(new[] { 4 });
-            Assert.That(_gameplay.XWins(), Is.False);
-            Assert.That(_gameplay.OWins(), Is.False);
+            _gameplay.GoTo(0);
+            _gameplay.GoTo(4);
+            Assert.That(_gameplay.WhoWins(), Is.EqualTo(BoardMark._));
         }
 
         [Test]
@@ -75,8 +62,38 @@ namespace TicTacToe.Tests
         {
             _gameplay.GoTo(0);
             _gameplay.Reset();
-            Assert.True(_gameplay.XGoesNow);
-            _boardMock.Verify(b=>b.Reset());
+            Assert.That(_gameplay.WhoGoesNow, Is.EqualTo(BoardMark.X));
+            Assert.That(_gameplay.Board.FreePositions, Is.EquivalentTo(new[] {0, 1, 2, 3, 4, 5, 6, 7, 8}));
+        }
+
+        [Test]
+        public void When_PlayingWithAComputer_Then_GamplayIsChangedTwiceInAUserTurn()
+        {
+            _gameplay.Setup(true);
+
+            var numTriggered = 0;
+            _gameplay.Changed += (_, __) => numTriggered++;
+
+            _ai.Setup(p => p.GetNextPosition(It.IsAny<BoardState>())).Returns(1);
+            _gameplay.GoTo(0);
+            Assert.That(numTriggered, Is.EqualTo(2));
+        }
+
+        [Test]
+        public void When_PlayingWithAComputer_Then_ThePositionIsAutomaticallyCalculated()
+        {
+            _gameplay.Setup(true);
+            _ai.Setup(p => p.GetNextPosition(It.IsAny<BoardState>())).Returns(1);
+            _gameplay.GoTo(0);
+            _ai.Verify(ai => ai.GetNextPosition(It.IsAny<BoardState>()));
+        }
+
+        [Test]
+        public void When_WithoutComputerPlayer_Then_ThePositionShouldNeverBeAutomaticallySet()
+        {
+            _gameplay.Setup(false);
+            _gameplay.GoTo(0);
+            _ai.Verify(ai => ai.GetNextPosition(_gameplay.Board), Times.Never());
         }
     }
 }
