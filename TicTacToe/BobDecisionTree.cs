@@ -29,9 +29,20 @@ namespace TicTacToe {
 
         private static IEnumerable<BobDecisionTree> AllDecisionsFromHere(BoardState board, BoardMark whosTurn, int decisionsCount)
         {
-            return board.GetFreeUniquePositions()
+            var positions2Go = new BoardSymmetry(board).GetFreeUniquePositions();
+            if (CanOptimizeTreeBuilding(positions2Go, decisionsCount))
+            {
+                positions2Go = positions2Go.AsParallel();
+            }
+
+            return positions2Go
                 .Select(p => new BobDecisionTree(board.Set(p, whosTurn), NextTurn(whosTurn), p, decisionsCount + 1))
                 .ToArray();
+        }
+
+        private static bool CanOptimizeTreeBuilding(IEnumerable<int> positions, int decisionsCount)
+        {
+            return decisionsCount < 2 && positions.Count() > 2;
         }
 
         private IEnumerable<BobDecisionTree> CollectEndDecisions() {

@@ -39,7 +39,8 @@ namespace TicTacToe
                     _view.Render("Play with the Computer? (Y/N)");
                 }
                 HandleInput(RequestUserInput());
-            } catch (Exception e)
+            } 
+            catch (Exception e)
             {
                 _view.Render(e.Message);
             }
@@ -58,31 +59,45 @@ namespace TicTacToe
                     QuitGame = true;
                     break;
                 case "R":
-                    _gameplay.Reset();
-                    break;
-                case "Y":
-                    if (!_ready2Play)
-                    {
-                        _gameplay.Setup(true);
-                        _ready2Play = true;
-                        UpdateView();
-                    }
-                    break;
-                case "N":
-                    if (!_ready2Play)
-                    {
-                        _gameplay.Setup(false);
-                        _ready2Play = true;
-                        UpdateView();
-                    }
+                    ResetGame();
                     break;
                 default:
                     if (_ready2Play)
                     {
                         _gameplay.GoTo(ParsePosition(key));
                     }
+                    else
+                    {
+                        MatchSetupInput(key);
+                    }
                     break;
             }
+        }
+
+        private void ResetGame()
+        {
+            _gameplay.Reset();
+            UpdateView();
+        }
+
+        private void MatchSetupInput(string key)
+        {
+            switch (key)
+            {
+                case "Y":
+                    SetupGame(true);
+                    break;
+                case "N":
+                    SetupGame(false);
+                    break;
+            }
+        }
+
+        private void SetupGame(bool playWithComputer)
+        {
+            _gameplay.Setup(playWithComputer);
+            _ready2Play = true;
+            UpdateView();
         }
 
         private static int ParsePosition(string key)
