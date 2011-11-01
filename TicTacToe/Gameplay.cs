@@ -6,10 +6,10 @@ namespace TicTacToe
     public class Gameplay : IGameplay
     {
         private BoardState _board;
-        private readonly IPlayStrategy _ai;
+        private readonly PlayStrategy _ai;
         private bool _playWithComputer;
 
-        public Gameplay(IPlayStrategy ai)
+        public Gameplay(PlayStrategy ai)
         {
             _ai = ai;
             _ai.SetMark(BoardMark.O);
@@ -66,7 +66,7 @@ namespace TicTacToe
             else
             {
                 _board = _board.Set(position, WhoGoesNow);
-                WhoGoesNow = WhoGoesNow == BoardMark.X ? BoardMark.O : BoardMark.X;
+                WhoGoesNow = WhoGoesNow.OpponentsMark();
             }
         }
 

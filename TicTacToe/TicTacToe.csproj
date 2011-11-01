@@ -50,6 +50,7 @@
     <Compile Include="ConsoleView.cs" />
     <Compile Include="IPlayStrategy.cs" />
     <Compile Include="IView.cs" />
+    <Compile Include="Steve.cs" />
     <Compile Include="TheDriver.cs" />
     <Compile Include="Gameplay.cs" />
     <Compile Include="GameController.cs" />

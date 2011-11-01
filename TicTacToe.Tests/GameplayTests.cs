@@ -8,12 +8,12 @@ namespace TicTacToe.Tests
     public class GameplayTests
     {
         private Gameplay _gameplay;
-        private Mock<IPlayStrategy> _ai;
+        private Mock<PlayStrategy> _ai;
 
         [SetUp]
         public void SetUp()
         {
-            _ai = new Mock<IPlayStrategy>();
+            _ai = new Mock<PlayStrategy>();
             _gameplay = new Gameplay(_ai.Object);
         }
 

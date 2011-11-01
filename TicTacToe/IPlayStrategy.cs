@@ -1,8 +1,14 @@
 namespace TicTacToe
 {
-    public interface IPlayStrategy
+    public abstract class PlayStrategy
     {
-        int GetNextPosition(BoardState board);
-        void SetMark(BoardMark mark);
+        protected BoardMark MyMark { get; set; }
+
+        public void SetMark(BoardMark mark)
+        {
+            MyMark = mark;
+        }
+
+        public abstract int GetNextPosition(BoardState board);
     }
 }

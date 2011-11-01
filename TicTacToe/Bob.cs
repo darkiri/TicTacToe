@@ -4,20 +4,14 @@ using System.Linq;
 
 namespace TicTacToe
 {
-    public class Bob : IPlayStrategy
+    public class Bob : PlayStrategy
     {
-        private BoardMark _myMark;
-        public void SetMark(BoardMark mark)
-        {
-            _myMark = mark;
-        }
-
-        public int GetNextPosition(BoardState board)
+        public override int GetNextPosition(BoardState board)
         {
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            var decisionsRoot = new BobDecisionTree(board, _myMark);
+            var decisionsRoot = new BobDecisionTree(board, MyMark);
             var position = GetBestDecision(decisionsRoot).Position;
             stopwatch.Stop();
 
@@ -34,7 +28,7 @@ namespace TicTacToe
             }
             else
             {
-                return decisionsRoot.Moves.OrderByDescending(m=>m.GetWinFactor(_myMark)).First();
+                return decisionsRoot.Moves.OrderByDescending(m=>m.GetWinFactor(MyMark)).First();
             }
         }
 

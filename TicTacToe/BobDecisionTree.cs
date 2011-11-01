@@ -36,7 +36,7 @@ namespace TicTacToe {
             }
 
             return positions2Go
-                .Select(p => new BobDecisionTree(board.Set(p, whosTurn), NextTurn(whosTurn), p, decisionsCount + 1))
+                .Select(p => new BobDecisionTree(board.Set(p, whosTurn), whosTurn.OpponentsMark(), p, decisionsCount + 1))
                 .ToArray();
         }
 
@@ -71,13 +71,9 @@ namespace TicTacToe {
             get { return _treeSize; }
         }
 
-        private static BoardMark NextTurn(BoardMark currentTurn) {
-            return currentTurn == BoardMark.X ? BoardMark.O : BoardMark.X;
-        }
-
         public double GetWinFactor(BoardMark whosTurn)
         {
-            return WinForecast(whosTurn, 0) - WinForecast(NextTurn(whosTurn), 1);
+            return WinForecast(whosTurn, 0) - WinForecast(whosTurn.OpponentsMark(), 1);
         }
 
         private double WinForecast(BoardMark whosTurn, int movesToGetTurn) 

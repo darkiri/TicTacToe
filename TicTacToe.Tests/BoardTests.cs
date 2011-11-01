@@ -78,5 +78,19 @@ namespace TicTacToe.Tests
             var board = SetUpBoard(line, BoardMark.O);
             Assert.That(board.HasCompleteLine(BoardMark.O), Is.True);
         }
+
+        [TestCase(new[] { 0, 1 }, new[] { 2 }, TestName = "O First Line")]
+        [TestCase(new[] { 3, 5 }, new[] { 4 }, TestName = "O Second Line")]
+        [TestCase(new[] { 7, 8 }, new[] { 6 }, TestName = "O Third Line")]
+        [TestCase(new[] { 0, 3 }, new[] { 6 }, TestName = "O First Column")]
+        [TestCase(new[] { 1, 7 }, new[] { 4 }, TestName = "O Second Column")]
+        [TestCase(new[] { 5, 8 }, new[] { 2 }, TestName = "O Third Column")]
+        [TestCase(new[] { 0, 4 }, new[] { 8 }, TestName = "O First Diagonal")]
+        [TestCase(new[] { 2, 6 }, new[] { 4 }, TestName = "O Second Diagonal")]
+        public void When_TwoMarksAreSet_Then_CanGetPositionsToWin(int[] line, int[] positions2Win)
+        {
+            var board = SetUpBoard(line, BoardMark.O);
+            Assert.That(board.GetPositionsToCompleteLine(BoardMark.O).ToArray(), Is.EquivalentTo(positions2Win));
+        }
     }
 }

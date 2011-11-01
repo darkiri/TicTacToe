@@ -20,6 +20,8 @@ namespace TicTacToe
             };
 
         private readonly IEnumerable<BoardMark> _board;
+        public static IEnumerable<int> Corners = new[] { 0, 2, 6, 8 };
+        public const int Center = 4;
 
         public BoardState()
         {
@@ -75,6 +77,14 @@ namespace TicTacToe
             return winLine.All(GetPositions(mark).Contains);
         }
 
+        public IEnumerable<int> GetPositionsToCompleteLine(BoardMark mark)
+        {
+           return _winPositions
+                .Where(line => line.Count(GetPositions(mark).Contains) == 2)
+                .SelectMany(line => line)
+                .Where(p => _board.ElementAt(p) == BoardMark._);
+        }
+
         public override string ToString()
         {
             return DrawLine(0) + Separators() + DrawLine(1) + Separators() + DrawLine(2);
@@ -100,5 +110,13 @@ namespace TicTacToe
         _,
         X,
         O,
+    }
+
+    public static class BoardMarkExtensions
+    {
+        public static BoardMark OpponentsMark(this BoardMark currentTurn)
+        {
+            return currentTurn == BoardMark.O ? BoardMark.X : BoardMark.O;
+        }
     }
 }
