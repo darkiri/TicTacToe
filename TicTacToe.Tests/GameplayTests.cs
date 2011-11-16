@@ -42,6 +42,25 @@ namespace TicTacToe.Tests
             Assert.That(numTriggered, Is.EqualTo(1));
         }
 
+        [Test]
+        public void When_GameResetted_Then_GameChangesIsTriggered()
+        {
+            var numTriggered = 0;
+            _gameplay.Changed += (_, __) => numTriggered++;
+            _gameplay.Reset();
+            Assert.That(numTriggered, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void When_GameIsSettedUp_Then_GameChangesIsTriggered()
+        {
+            var numTriggered = 0;
+            _gameplay.Changed += (_, __) => numTriggered++;
+            _gameplay.Setup(true);
+            _gameplay.Setup(false);
+            Assert.That(numTriggered, Is.EqualTo(2));
+        }
+
         [Test, ExpectedException(typeof (InvalidOperationException))]
         public void When_CornerIsNotFree_Then_CannotGoCorner()
         {

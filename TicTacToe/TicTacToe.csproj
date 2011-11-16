@@ -48,7 +48,8 @@
     <Compile Include="Bob.cs" />
     <Compile Include="BobDecisionTree.cs" />
     <Compile Include="ConsoleView.cs" />
-    <Compile Include="IPlayStrategy.cs" />
+    <Compile Include="ControllerStates.cs" />
+    <Compile Include="PlayStrategy.cs" />
     <Compile Include="IView.cs" />
     <Compile Include="Steve.cs" />
     <Compile Include="TheDriver.cs" />

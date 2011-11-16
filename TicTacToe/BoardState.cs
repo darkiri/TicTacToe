@@ -36,9 +36,9 @@ namespace TicTacToe
         public IEnumerable<int> GetPositions(BoardMark mark)
         {
             return _board
-                .Select((m, p) => new {m, p})
-                .Where(b => b.m == mark)
-                .Select(b => b.p);
+                .Select((m, p) => new {Mark = m, Position = p})
+                .Where(b => b.Mark == mark)
+                .Select(b => b.Position);
         }
 
         public IEnumerable<int> FreePositions
@@ -58,7 +58,7 @@ namespace TicTacToe
                 throw new InvalidOperationException();
             } else
             {
-                return new BoardState(_board.Select((m, p) => p == position ? mark : m));
+                return new BoardState(_board.Select((oldMark, p) => p == position ? mark : oldMark));
             }
         }
 

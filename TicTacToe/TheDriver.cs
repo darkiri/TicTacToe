@@ -2,9 +2,12 @@
 {
     public class TheDriver
     {
+        private static GameController _controller;
+
         public static void Main()
         {
-            StartPipe(InjectComponents());
+            _controller = InjectComponents();
+            Pipe(ControllerState.Setup);
         }
 
         private static GameController InjectComponents()
@@ -12,11 +15,11 @@
             return new GameController(new ConsoleView(), new Gameplay(new Steve()));
         }
 
-        private static void StartPipe(GameController controller)
+        private static void Pipe(ControllerState state)
         {
-            while (!controller.QuitGame)
+            if (state != ControllerState.Quit)
             {
-                controller.DoUserInteraction();
+                Pipe(_controller.DoUserInteraction(state));
             }
         }
     }

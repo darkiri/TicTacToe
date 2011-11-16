@@ -54,7 +54,7 @@ namespace TicTacToe.Tests
         [TestCase(new[] {2, 5, 8}, TestName = "X Third Column")]
         [TestCase(new[] {0, 4, 8}, TestName = "X First Diagonal")]
         [TestCase(new[] {2, 4, 6}, TestName = "X Second Diagonal")]
-        public void When_BoardHasFullLineX_Then_XWins(int[] line)
+        public void When_BoardHasFullLineX_Then_BoardCanDetectIt(int[] line)
         {
             var board = SetUpBoard(line, BoardMark.X);
             Assert.That(board.HasCompleteLine(BoardMark.X), Is.True);
@@ -73,7 +73,7 @@ namespace TicTacToe.Tests
         [TestCase(new[] {2, 5, 8}, TestName = "O Third Column")]
         [TestCase(new[] {0, 4, 8}, TestName = "O First Diagonal")]
         [TestCase(new[] {2, 4, 6}, TestName = "O Second Diagonal")]
-        public void When_BoardHasFullLineO_Then_OWins(int[] line)
+        public void When_BoardHasFullLineO_Then_BoardCanDetectIt(int[] line)
         {
             var board = SetUpBoard(line, BoardMark.O);
             Assert.That(board.HasCompleteLine(BoardMark.O), Is.True);

@@ -19,6 +19,7 @@ namespace TicTacToe
         public void Setup(bool playWithComputer)
         {
             _playWithComputer = playWithComputer;
+            OnChanged();
         }
 
         public BoardMark WhoGoesNow { get; private set; }
@@ -32,17 +33,18 @@ namespace TicTacToe
 
         public BoardMark WhoWins()
         {
-            return Board.HasCompleteLine()
-                       ? Board.HasCompleteLine(BoardMark.X)
-                             ? BoardMark.X
-                             : BoardMark.O
-                       : BoardMark._;
+            return Board.HasCompleteLine(BoardMark.X)
+                       ? BoardMark.X
+                       : Board.HasCompleteLine(BoardMark.O)
+                             ? BoardMark.O
+                             : BoardMark._;
         }
 
         public void Reset()
         {
             WhoGoesNow = BoardMark.X;
             _board = new BoardState();
+            OnChanged();
         }
 
         public void GoTo(int position)

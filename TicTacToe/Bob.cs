@@ -11,10 +11,10 @@ namespace TicTacToe
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            var decisionsRoot = new BobDecisionTree(board, MyMark);
+            var decisionsRoot = new BobDecisionTree(board, OwnMark);
             var position = GetBestDecision(decisionsRoot).Position;
+            
             stopwatch.Stop();
-
             Devinfo("Tree Size {0} built in {1} ms", decisionsRoot.TreeSize, stopwatch.ElapsedMilliseconds);
 
             return position;
@@ -28,7 +28,7 @@ namespace TicTacToe
             }
             else
             {
-                return decisionsRoot.Moves.OrderByDescending(m=>m.GetWinFactor(MyMark)).First();
+                return decisionsRoot.Moves.OrderByDescending(m => m.GetWinFactor(OwnMark)).First();
             }
         }
 

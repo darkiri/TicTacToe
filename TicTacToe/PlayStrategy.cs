@@ -2,11 +2,12 @@ namespace TicTacToe
 {
     public abstract class PlayStrategy
     {
-        protected BoardMark MyMark { get; set; }
+        protected BoardMark OwnMark { get; set; }
+        protected BoardMark OpponentsMark { get { return OwnMark.OpponentsMark(); } }
 
         public void SetMark(BoardMark mark)
         {
-            MyMark = mark;
+            OwnMark = mark;
         }
 
         public abstract int GetNextPosition(BoardState board);

@@ -13,7 +13,7 @@ namespace TicTacToe
             _boardState = boardState;
         }
 
-        public IEnumerable<int> GetFreeUniquePositions()
+        public int[] GetFreeUniquePositions()
         {
             var diagonal1Mirroring = GetUniquePositions(c => new Tuple<int, int>(c.Item2, c.Item1));
             var diagonal2Mirroring = GetUniquePositions(c => new Tuple<int, int>(2 - c.Item2, 2 - c.Item1));
