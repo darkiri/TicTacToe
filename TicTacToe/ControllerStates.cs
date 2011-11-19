@@ -9,7 +9,7 @@ namespace TicTacToe
         public static readonly ControllerState Quit = new EndState();
         public static readonly ControllerState GameOver = new EndState();
 
-        public ControllerState Handle(string key, IGameplay gameplay)
+        public virtual ControllerState Handle(string key, IGameplay gameplay)
         {
             switch (key)
             {

@@ -1,33 +1,44 @@
 ﻿using System;
+using Machine.Specifications;
+using Machine.Specifications.Annotations;
 using Moq;
-using NUnit.Framework;
+using It = Machine.Specifications.It;
 
 namespace TicTacToe.Tests
 {
-    [TestFixture]
-    public class GameControllerTests
+    public class with_game_controller
     {
-        private GameController _controller;
-        private Mock<IGameplay> _gameMock;
-        private Mock<IView> _viewMock;
+        public static Mock<IView> ViewMock;
+        public static Mock<IGameplay> GameMock;
+        public static GameController Controller;
+        public static Mock<ControllerState> StateMock;
 
-        [SetUp]
-        public void SetUp()
+        private Establish context = () =>
         {
-            _gameMock = new Mock<IGameplay>
+            GameMock = new Mock<IGameplay>
                         {
                             DefaultValue = DefaultValue.Mock
                         };
-            _viewMock = new Mock<IView>();
-            _controller = new GameController(_viewMock.Object, _gameMock.Object);
-        }
+            ViewMock = new Mock<IView>();
+            Controller = new GameController(ViewMock.Object, GameMock.Object);
+            StateMock = new Mock<ControllerState>();
 
+            ViewMock.Setup(v => v.GetUserInput()).Returns("1");
+        };
+    }
 
-        [Test]
-        public void When_GameplayIsChanged_Then_PlayStateIsRendered()
-        {
-            _gameMock.Raise(g => g.Changed += null, new EventArgs());
-            _viewMock.Verify(v => v.Render(ControllerState.Play.ToString(_gameMock.Object)));
-        }
+    [Subject(typeof(GameController))]    
+    public class when_game_is_changed : with_game_controller
+    {
+        Because of = () => GameMock.Raise(g => g.Changed += null, new EventArgs());
+        It should_render_the_game_state = () => ViewMock.Verify(v => v.Render(ControllerState.Play.ToString(GameMock.Object)));
+    }
+
+    [Subject(typeof(GameController))]    
+    public class by_user_interaction : with_game_controller
+    {
+        Because of = () => Controller.DoUserInteraction(StateMock.Object);
+        It should_request_user_input = () => ViewMock.Verify(v => v.GetUserInput());
+        It should_handle_user_input = () => StateMock.Verify(s => s.Handle("1", GameMock.Object));
     }
 }
