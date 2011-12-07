@@ -30,7 +30,7 @@ namespace TicTacToe {
         private static IEnumerable<BobDecisionTree> AllDecisionsFromHere(BoardState board, BoardMark whosTurn, int decisionsCount)
         {
             IEnumerable<int> positions2Go = new BoardSymmetry(board).GetFreeUniquePositions();
-            if (CanOptimizeTreeBuilding(positions2Go, decisionsCount))
+            if (CanOptimizeTreeBuilding(decisionsCount, positions2Go))
             {
                 positions2Go = positions2Go.AsParallel();
             }
@@ -41,9 +41,9 @@ namespace TicTacToe {
                 .ToArray();
         }
 
-        private static bool CanOptimizeTreeBuilding(IEnumerable<int> positions, int decisionsCount)
+        private static bool CanOptimizeTreeBuilding(int decisionsDepth, IEnumerable<int> variants)
         {
-            return decisionsCount < 2 && positions.Count() > 2;
+            return decisionsDepth < 2 && variants.Count() > 2;
         }
 
         private bool IsEndDecision {

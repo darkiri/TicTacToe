@@ -8,28 +8,25 @@ namespace TicTacToe
         private BoardState _board;
         private readonly PlayStrategy _ai;
         private bool _playWithComputer;
+        private BoardMark _whoGoesNow;
 
-        public Gameplay(PlayStrategy ai)
+        public BoardMark WhoGoesNow
         {
-            _ai = ai;
-            _ai.SetMark(BoardMark.O);
-            Reset();
+            get { return _whoGoesNow; }
         }
-
-        public void Setup(bool playWithComputer)
-        {
-            _playWithComputer = playWithComputer;
-            OnChanged();
-        }
-
-        public BoardMark WhoGoesNow { get; private set; }
 
         public BoardState Board
         {
             get { return _board; }
         }
 
-        public event EventHandler Changed;
+        public Gameplay(PlayStrategy ai)
+        {
+            _ai = ai;
+            _ai.SetMark(BoardMark.O);
+            _whoGoesNow = BoardMark.X;
+            _board = new BoardState();
+        }
 
         public BoardMark WhoWins()
         {
@@ -40,12 +37,28 @@ namespace TicTacToe
                              : BoardMark._;
         }
 
+        public void Setup(bool playWithComputer)
+        {
+            _playWithComputer = playWithComputer;
+            OnChanged();
+        }
+
         public void Reset()
         {
-            WhoGoesNow = BoardMark.X;
+            _whoGoesNow = BoardMark.X;
             _board = new BoardState();
             OnChanged();
         }
+
+        private void OnChanged()
+        {
+            if (null != Changed)
+            {
+                Changed(this, new EventArgs());
+            }
+        }
+
+        public event EventHandler Changed;
 
         public void GoTo(int position)
         {
@@ -68,15 +81,7 @@ namespace TicTacToe
             else
             {
                 _board = _board.Set(position, WhoGoesNow);
-                WhoGoesNow = WhoGoesNow.OpponentsMark();
-            }
-        }
-
-        private void OnChanged()
-        {
-            if (null != Changed)
-            {
-                Changed(this, new EventArgs());
+                _whoGoesNow = WhoGoesNow.OpponentsMark();
             }
         }
     }

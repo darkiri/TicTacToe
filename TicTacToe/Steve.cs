@@ -6,62 +6,103 @@ namespace TicTacToe
 {
     public class Steve : PlayStrategy
     {
+        private BoardState _board;
+
         public override int GetNextPosition(BoardState board)
         {
-            int? position = null;
-            position = position
-                .Try(() => CanWinNow(board, OwnMark),
-                     () => GetWinPosition(board, OwnMark))
-                .Try(() => CanWinNow(board, OpponentsMark),
-                     () => GetWinPosition(board, OpponentsMark))
-                .Try(() => GetForkPositions(board, OwnMark).Count() > 0,
-                     () => GetForkPositions(board, OwnMark).First())
-                .Try(() => GetForkPositions(board, OpponentsMark).Count() > 0,
-                     () => GetForkPositions(board, OpponentsMark).First())
-                .Try(() => board.FreePositions.Contains(BoardState.Center),
+            _board = board;
+            return EmptyPosition
+                .Try(IfICanWin,
+                     GoToWinPosition)
+                .Try(IfOpponentCanWin,
+                     BlockWinPosition)
+                .Try(IfICanFork,
+                     GoToForkPosition)
+                .Try(IfOpponentCanFork,
+                     BlockForkPosition)
+                .Try(IfCenterFree,
                      () => BoardState.Center)
-                .Try(() => board.FreePositions.Any(p => BoardState.Corners.Contains(p)),
-                     () => GetBestCorner(board))
+                .Try(IfAnyCornerFree,
+                     GetBestCorner)
                 .Try(() => board.FreePositions.Count() > 0,
-                     () => board.FreePositions.First());
-            if (null == position)
-            {
-                throw new InvalidOperationException("Cannot go anywhere!");
-            }
-            else
-            {
-                return position.Value;
-            }
+                     () => board.FreePositions.First())
+                .Return();
         }
 
-        private bool CanWinNow(BoardState board, BoardMark mark)
+        private static int? EmptyPosition
         {
-            return board.GetPositionsToCompleteLine(mark).Count() > 0;
+            get { return null; }
         }
 
-        private int GetWinPosition(BoardState board, BoardMark mark)
+        private bool IfICanWin()
         {
-            return board.GetPositionsToCompleteLine(mark).First();
+            return _board.GetPositionsToCompleteLine(OwnMark).Count() > 0;
         }
 
-        private IEnumerable<int> GetForkPositions(BoardState board, BoardMark mark)
+        private bool IfOpponentCanWin()
         {
-            return board.FreePositions
-                .Where(p => board.Set(p, mark).GetPositionsToCompleteLine(mark).Count() > 1);
+            return _board.GetPositionsToCompleteLine(OpponentsMark).Count() > 0;
         }
 
-        private int GetBestCorner(BoardState board)
+        private int GoToWinPosition()
         {
-            var corners = GetFreeCorners(board)
-                .Where(p => board.Set(p, OwnMark).GetPositionsToCompleteLine(OwnMark).Count() > 0);
-            return corners.Count() > 0
-                       ? corners.First()
-                       : GetFreeCorners(board).First();
+            return _board.GetPositionsToCompleteLine(OwnMark).First();
         }
 
-        private static IEnumerable<int> GetFreeCorners(BoardState board)
+        private int BlockWinPosition()
         {
-            return board.FreePositions.Where(p => BoardState.Corners.Contains(p));
+            return _board.GetPositionsToCompleteLine(OpponentsMark).First();
+        }
+
+        private bool IfICanFork()
+        {
+            return GetForkPositions(OwnMark).Count() > 0;
+        }
+
+        private bool IfOpponentCanFork()
+        {
+            return GetForkPositions(OpponentsMark).Count() > 0;
+        }
+
+        private int GoToForkPosition()
+        {
+            return GetForkPositions(OwnMark).First();
+        }
+
+        private int BlockForkPosition()
+        {
+            return GetForkPositions(OpponentsMark).First();
+        }
+
+        private IEnumerable<int> GetForkPositions(BoardMark mark)
+        {
+            return _board.FreePositions
+                .Where(p => _board.Set(p, mark).GetPositionsToCompleteLine(mark).Count() > 1);
+        }
+
+        private bool IfCenterFree()
+        {
+            return _board.FreePositions.Contains(BoardState.Center);
+        }
+
+        private bool IfAnyCornerFree()
+        {
+            return _board.FreePositions.Any(p => BoardState.Corners.Contains(p));
+        }
+
+        private int GetBestCorner()
+        {
+            var winCorners = GetFreeCorners()
+                .Where(p => _board.Set(p, OwnMark).GetPositionsToCompleteLine(OwnMark).Count() > 0)
+                .ToArray();
+            return winCorners.Count() > 0
+                       ? winCorners.First()
+                       : GetFreeCorners().First();
+        }
+
+        private IEnumerable<int> GetFreeCorners()
+        {
+            return _board.FreePositions.Where(p => BoardState.Corners.Contains(p));
         }
     }
 
@@ -72,6 +113,18 @@ namespace TicTacToe
             return position == null && predicate()
                        ? evaluator()
                        : position;
+        }
+
+        public static int Return(this int? position)
+        {
+            if (null == position)
+            {
+                throw new InvalidOperationException("Cannot go anywhere!");
+            }
+            else
+            {
+                return position.Value;
+            }
         }
     }
 }

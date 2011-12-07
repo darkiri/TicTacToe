@@ -1,6 +1,5 @@
 ﻿using System;
 using Machine.Specifications;
-using Machine.Specifications.Annotations;
 using Moq;
 using It = Machine.Specifications.It;
 
@@ -13,7 +12,7 @@ namespace TicTacToe.Tests
         public static GameController Controller;
         public static Mock<ControllerState> StateMock;
 
-        private Establish context = () =>
+        Establish context = () =>
         {
             GameMock = new Mock<IGameplay>
                         {

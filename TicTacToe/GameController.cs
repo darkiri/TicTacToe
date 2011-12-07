@@ -19,11 +19,6 @@ namespace TicTacToe
             _view.Render(state.ToString(_gameplay));
         }
 
-        private string RequestUserInput()
-        {
-            return _view.GetUserInput().ToUpper();
-        }
-
         public ControllerState DoUserInteraction(ControllerState state)
         {
             try
@@ -32,7 +27,7 @@ namespace TicTacToe
                 {
                     UpdateView(state);
                 }
-                return state.Handle(RequestUserInput(), _gameplay);
+                return state.Handle(_view.GetUserInput(), _gameplay);
             }
             catch (Exception e)
             {

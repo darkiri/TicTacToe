@@ -11,7 +11,7 @@ namespace TicTacToe
 
         public virtual ControllerState Handle(string key, IGameplay gameplay)
         {
-            switch (key)
+            switch (key.ToUpper())
             {
                 case "Q":
                     return Quit;
@@ -19,7 +19,7 @@ namespace TicTacToe
                     gameplay.Reset();
                     return Play;
                 default:
-                    return HandleOtherInput(key, gameplay);
+                    return HandleOtherInput(key.ToUpper(), gameplay);
             }
         }
 
@@ -45,7 +45,10 @@ namespace TicTacToe
         protected override ControllerState HandleOtherInput(string key, IGameplay gameplay)
         {
             gameplay.GoTo(ParsePosition(key));
-            return gameplay.WhoWins() != BoardMark._ ? GameOver : Play;
+            
+            return gameplay.WhoWins() != BoardMark._ 
+                ? GameOver 
+                : Play;
         }
 
         private static int ParsePosition(string key)
